@@ -4,6 +4,8 @@ import cv2
 import numpy as np
 from arrows import ArrowManager
 
+# BPM IS 115
+
 # Initialize Pygame
 pygame.init()
 
@@ -25,9 +27,11 @@ cap = cv2.VideoCapture(video_path)
 # Start the song
 #pygame.mixer.music.play()
 
+
+
 # Fonts for text
 font = pygame.font.SysFont('Arial', 60)
-
+"""
 # Start screen function
 def start_screen():
     screen.fill((0, 0, 0))  # Fill the screen with black
@@ -56,9 +60,13 @@ def start_screen():
 print("About to start")
 # Run the start screen
 start_screen()
+"""
 
 # Arrow Manager
 arrow_manager = ArrowManager(screen)
+
+# make hitbox
+hitbox = pygame.image.load('box.png')
 
 # Main game loop
 running = True
@@ -66,7 +74,7 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-
+    
     # Read a frame from the video
     grabbed, frame = cap.read()
 
@@ -84,16 +92,25 @@ while running:
 
     # Generate arrows randomly
     if random.randint(1, 20) == 1:  # Example condition to create an arrow
-        direction = random.choice(["up", "down", "left", "right"])
-        arrow_manager.spawn_arrow(direction)
+        direction = random.choice(["left_down", "left", "left_up", "up", "down", "right_up", "right", "right_down", "left_down2", "left2", "left_up2", "up2", "down2", "right_up2", "right2", "right_down2"])
+        arrow_manager.spawn_arrow(direction, screen_width, screen_height)
 
+    
     # Update game state
     arrow_manager.update()
 
+    # check for collision
+    arrow_manager.check_collision(pygame)
+
     # Draw everything
+    for x in range(0, 8):
+        screen.blit(hitbox, (30+x*64, 100))
+        screen.blit(hitbox, (898+x*64, 100))
     arrow_manager.draw()
     pygame.display.flip()
     clock.tick(30)  # Maintain 30 FPS
+
+
 
 cap.release()
 pygame.quit()
