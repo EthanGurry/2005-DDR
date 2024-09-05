@@ -1,29 +1,43 @@
 import pygame
 import random
-import cv2
+#import cv2
 import numpy as np
 from arrows import ArrowManager
+from textRenderer import TextRenderer
 
 # BPM IS 115
 
 # Initialize Pygame
 pygame.init()
+pygame.joystick.init()
+
+# Create a text render object
+txtRndr = TextRenderer(pygame)
+
+# Create a joystick object
+joystick1 = pygame.joystick.Joystick(0)
+joystick1.init()
+
+# Create a second joystick object
+joystick2 = pygame.joystick.Joystick(1)
+joystick2.init()
+
 
 # Set up display
-screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+screen_width = 1920
+screen_height = 1080
+screen = pygame.display.set_mode((screen_width, screen_height), pygame.FULLSCREEN)
 pygame.display.set_caption("DDR Game")
 clock = pygame.time.Clock()
-
-screen_width = screen.get_width()
-screen_height = screen.get_height()
 
 # Load the song
 #pygame.mixer.music.load('5050.mp3')
 
+'''
 # Initialize video player
 video_path = 'AAU-Highlights.mp4'
 cap = cv2.VideoCapture(video_path)
-
+'''
 # Start the song
 #pygame.mixer.music.play()
 
@@ -66,8 +80,8 @@ start_screen()
 arrow_manager = ArrowManager(screen)
 
 # make hitbox
-hitbox = pygame.image.load('box.png')
-
+hitbox = pygame.image.load('assets/hitbox.png')
+x = True
 # Main game loop
 running = True
 while running:
@@ -75,6 +89,7 @@ while running:
         if event.type == pygame.QUIT:
             running = False
     
+    '''
     # Read a frame from the video
     grabbed, frame = cap.read()
 
@@ -89,28 +104,30 @@ while running:
 
         # Display the frame on the screen
         screen.blit(frame_surface, (0, 0))
+        '''
 
     # Generate arrows randomly
     if random.randint(1, 20) == 1:  # Example condition to create an arrow
         direction = random.choice(["left_down", "left", "left_up", "up", "down", "right_up", "right", "right_down", "left_down2", "left2", "left_up2", "up2", "down2", "right_up2", "right2", "right_down2"])
         arrow_manager.spawn_arrow(direction, screen_width, screen_height)
 
-    
     # Update game state
     arrow_manager.update()
 
     # check for collision
-    arrow_manager.check_collision(pygame)
+    arrow_manager.check_collision(pygame, joystick1, joystick2, txtRndr)
+   
 
     # Draw everything
-    for x in range(0, 8):
-        screen.blit(hitbox, (30+x*64, 100))
-        screen.blit(hitbox, (898+x*64, 100))
+    screen.fill((0, 0, 0))  # Clear screen
+    txtRndr.render(screen)
+    screen.blit(hitbox, (0, 0)) # draw hitbox
     arrow_manager.draw()
     pygame.display.flip()
     clock.tick(30)  # Maintain 30 FPS
 
 
 
-cap.release()
+#cap.release()
 pygame.quit()
+
