@@ -29,6 +29,7 @@ p1dict = {'left':0, 'down':1, 'up':2, 'right':3, 'left_down':4, 'right_down':5, 
 p2dict = {'left2':0, 'down2':1, 'up2':2, 'righ2t':3, 'left_down2':4, 'right_down2':5, 'left_up2':6, 'right_up2':7}
 
 
+
 # Set up display
 screen_width = 1920
 screen_height = 1080
@@ -37,29 +38,28 @@ pygame.display.set_caption("DDR Game")
 
 # Set up clock/timing information
 clock = pygame.time.Clock()
-start_time = time.time()
 
 # Load the song
 #pygame.mixer.music.load('5050.mp3')
 
-
+'''
 # Initialize video player
-video_path = 'AAU-Highlights.mp4'
+video_path = 'cgtfa-e001.mp4'
 cap = cv2.VideoCapture(video_path)
-
+'''
 # Start the song
 #pygame.mixer.music.play()
 
 
 
 # Fonts for text
-font = pygame.font.SysFont('Arial', 60)
-"""
+font = pygame.font.SysFont('Alagard', 60)
+
 # Start screen function
 def start_screen():
     screen.fill((0, 0, 0))  # Fill the screen with black
     title_text = font.render('2005 CO. ', True, (255, 255, 255))
-    start_text = font.render('Press any key to start', True, (255, 255, 255))
+    start_text = font.render('Press start', True, (255, 255, 255))
     
     # Get the rectangle for centering
     title_rect = title_text.get_rect(center=(screen_width // 2, screen_height // 2 - 50))
@@ -70,20 +70,22 @@ def start_screen():
     
     pygame.display.flip()
     
-    # Wait for any key press
+    # Wait for start key press
     waiting = True
     while waiting:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()
-            if event.type == pygame.KEYDOWN:
+            if event.type == pygame.JOYBUTTONDOWN and event.button == 9:
+                print('pressed start')
                 waiting = False
+
 
 print("About to start")
 # Run the start screen
 start_screen()
-"""
+
 
 # Arrow Manager
 arrow_manager = ArrowManager(screen)
@@ -93,14 +95,28 @@ hitbox = pygame.image.load('assets/hitbox.png')
 x = True
 # Main game loop
 running = True
+waiting = False
+start_time = time.time()
+i = 0
 while running:
     current_time = time.time() - start_time
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            running = False
-    
-    
+            pygame.quit()
+            exit()
+        if event.type == pygame.JOYBUTTONDOWN and event.button == 8:    # condition for pausing the game
+            waiting = True
+            while waiting:
+                if event.type == pygame.JOYBUTTONDOWN and event.button == 8:
+                    waiting = False
+
+    '''
+    # code for loading video as img sequences
+    path = 'early-IS-e001/Sequence 0' + str(200000 + i) + '.png'
+    bg_img = pygame.image.load(path)
+    '''
+    '''
     # Read a frame from the video
     grabbed, frame = cap.read()
     frame_surface = None
@@ -113,18 +129,20 @@ while running:
 
         # Create a Pygame Surface from the frame
         frame_surface = pygame.surfarray.make_surface(frame)
-    
+    else:
+        pygame.quit()
+        exit()
+    '''
 
     # loop through notes to see if an arrow is ready to spawn
     for x in notes:
         # checking when and where to spawn an arrow
         if current_time >= x[3]:  # When it's time to play this note
             direction = x[1]
-            arrow_manager.spawn_arrow(direction, screen_width, 1500)
+            arrow_manager.spawn_arrow(direction, screen_width, 1080)
             notes.remove(x)
-        
-            
 
+        
     '''
     # Generate arrows randomly
     if random.randint(1, 20) == 1:  # Example condition to create an arrow
@@ -142,14 +160,17 @@ while running:
     # Draw everything
     screen.fill((0, 0, 0))  # Clear screen
     # Display the frame on the screen
-    screen.blit(frame_surface, (0, 0)) 
+    #screen.blit(frame_surface, (0, 0)) ETHAN FIX ME PLEASE DONT FORGET ME ETHAN
+    #screen.blit(bg_img, (0, 0))
     txtRndr.render(screen)
     screen.blit(hitbox, (0, 0)) # draw hitbox
     arrow_manager.draw()
     pygame.display.flip()
     clock.tick(30)  # Maintain 30 FPS
+    # increase counter for img sequence
+    i += 1
 
 
 
-cap.release()
+#cap.release()
 pygame.quit()
