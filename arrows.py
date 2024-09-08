@@ -2,23 +2,6 @@ import pygame
 import time
 from textRenderer import TextRenderer
 
-
-# Game settings
-BPM = 115
-target_y = 100  # Y-position where arrows need to match
-
-# Arrow settings
-arrow_start_y = 0  # Starting Y-position at the top of the screen
-arrow_height = 50  # Height of the arrow image
-distance_to_target = target_y - arrow_start_y
-
-# Calculate time per beat in seconds
-time_per_beat = 60 / BPM
-
-# Calculate speed in pixels per frame
-frames_per_beat = 30 * time_per_beat
-speed_pixels_per_frame = distance_to_target / frames_per_beat
-
 # Dictionary for direction to x coordinates
 xdict = {'left':200, 'down':500, 'up':400, 'right':700, 'left_down':100, 'right_down':800, 'left_up':300, 'right_up':600,
          'left2':1120, 'down2':1420, 'up2':1320, 'right2':1620, 'left_down2':1020, 'right_down2':1720, 'left_up2':1220, 'right_up2':1520}
@@ -41,7 +24,7 @@ class Arrow(pygame.sprite.Sprite):
         txtRndr.show_text("MISS!", (self.rect.x, 75), duration, color )
     
     def update(self):
-        self.rect.y -= speed_pixels_per_frame
+        self.rect.y -= 12
         if self.rect.y < 0:
             self.kill()  # Remove the arrow when it goes off-screen
 
@@ -85,8 +68,7 @@ class ArrowManager:
             elif arrow.rect.y < 100:
                 arrow.miss(txtRndr) # generates miss text
                 self.arrows.remove(arrow)
-
-
+                
 
 
 
