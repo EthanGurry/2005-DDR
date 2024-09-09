@@ -6,9 +6,8 @@ from textRenderer import TextRenderer
 xdict = {'left':200, 'down':500, 'up':400, 'right':700, 'left_down':100, 'right_down':800, 'left_up':300, 'right_up':600,
          'left2':1120, 'down2':1420, 'up2':1320, 'right2':1620, 'left_down2':1020, 'right_down2':1720, 'left_up2':1220, 'right_up2':1520}
 # Dictionary for direction to button index
-p1dict = {'left':0, 'down':1, 'up':2, 'right':3, 'left_down':4, 'right_down':5, 'left_up':6, 'right_up':7}
-p2dict = {'left2':0, 'down2':1, 'up2':2, 'right2':3, 'left_down2':4, 'right_down2':5, 'left_up2':6, 'right_up2':7}
-
+p1dict = {'left':2, 'down':1, 'up':0, 'right':3, 'left_down':8, 'right_down':5, 'left_up':6, 'right_up':7}
+p2dict = {'left2':2, 'down2':1, 'up2':0, 'right2':3, 'left_down2':8, 'right_down2':5, 'left_up2':6, 'right_up2':7}
 
 class Arrow(pygame.sprite.Sprite):
     def __init__(self, image, position, direction):
@@ -68,6 +67,7 @@ class ArrowManager:
             elif arrow.rect.y < 100:
                 arrow.miss(txtRndr) # generates miss text
                 self.arrows.remove(arrow)
+           
                 
 
 
