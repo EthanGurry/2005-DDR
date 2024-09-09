@@ -25,8 +25,8 @@ joystick2 = pygame.joystick.Joystick(1)
 joystick2.init()
 
 # Dictionary for direction to button index
-p1dict = {'left':0, 'down':1, 'up':2, 'right':3, 'left_down':4, 'right_down':5, 'left_up':6, 'right_up':7}
-p2dict = {'left2':0, 'down2':1, 'up2':2, 'righ2t':3, 'left_down2':4, 'right_down2':5, 'left_up2':6, 'right_up2':7}
+p1dict = {'left':2, 'down':1, 'up':0, 'right':3, 'left_down':8, 'right_down':5, 'left_up':6, 'right_up':7}
+p2dict = {'left2':2, 'down2':1, 'up2':0, 'right2':3, 'left_down2':8, 'right_down2':5, 'left_up2':6, 'right_up2':7}
 
 
 
@@ -39,17 +39,30 @@ pygame.display.set_caption("DDR Game")
 # Set up clock/timing information
 clock = pygame.time.Clock()
 
-# Load the song
-#pygame.mixer.music.load('5050.mp3')
-
-'''
 # Initialize video player
 video_path = 'cgtfa-e001.mp4'
 cap = cv2.VideoCapture(video_path)
-'''
-# Start the song
-#pygame.mixer.music.play()
+frame_surfaces = []
 
+# Read video data and turn it into pygame surfaces
+read = True
+print('starting video loop')
+#while read:
+for i in range(2550):
+    grabbed, frame = cap.read()
+    print('in loop')
+    if grabbed:
+        # Convert the frame to RGB
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        frame = np.transpose(frame, (1, 0, 2))  # Transpose to (width, height, channels)
+
+        # Create a Pygame Surface from the frame
+        frame_surfaces.append(pygame.surfarray.make_surface(frame))
+    else:
+        break
+        #read = False
+print('out of loop')
+cap.release()
 
 
 # Fonts for text
@@ -95,7 +108,7 @@ hitbox = pygame.image.load('assets/hitbox.png')
 x = True
 # Main game loop
 running = True
-waiting = False
+preloaded = 2550
 start_time = time.time()
 i = 0
 while running:
@@ -105,34 +118,21 @@ while running:
         if event.type == pygame.QUIT:
             pygame.quit()
             exit()
-        if event.type == pygame.JOYBUTTONDOWN and event.button == 8:    # condition for pausing the game
-            waiting = True
-            while waiting:
-                if event.type == pygame.JOYBUTTONDOWN and event.button == 8:
-                    waiting = False
 
-    '''
-    # code for loading video as img sequences
-    path = 'early-IS-e001/Sequence 0' + str(200000 + i) + '.png'
-    bg_img = pygame.image.load(path)
-    '''
-    '''
+    
     # Read a frame from the video
-    grabbed, frame = cap.read()
-    frame_surface = None
+    if preloaded <= 0:
+        grabbed, frame = cap.read()
+        frame_surface = None
+        print('grabbed')
+        if grabbed:
+            # Convert the frame to RGB
+            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            frame = np.transpose(frame, (1, 0, 2))  # Transpose to (width, height, channels)
 
-    if grabbed:
-        # Convert the frame to RGB
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        frame = cv2.resize(frame, (screen_width, screen_height))
-        frame = np.transpose(frame, (1, 0, 2))  # Transpose to (width, height, channels)
-
-        # Create a Pygame Surface from the frame
-        frame_surface = pygame.surfarray.make_surface(frame)
-    else:
-        pygame.quit()
-        exit()
-    '''
+            # Create a Pygame Surface from the frame
+            frame_surface = pygame.surfarray.make_surface(frame)
+    
 
     # loop through notes to see if an arrow is ready to spawn
     for x in notes:
@@ -160,7 +160,13 @@ while running:
     # Draw everything
     screen.fill((0, 0, 0))  # Clear screen
     # Display the frame on the screen
-    #screen.blit(frame_surface, (0, 0)) ETHAN FIX ME PLEASE DONT FORGET ME ETHAN
+    print(preloaded)
+    print(i)
+    print("")
+    if preloaded > 0 and frame_surfaces[i] != None:
+        screen.blit(frame_surfaces[i], (0, 0)) 
+    else:
+        screen.blit(frame_surface, (0, 0))
     #screen.blit(bg_img, (0, 0))
     txtRndr.render(screen)
     screen.blit(hitbox, (0, 0)) # draw hitbox
@@ -169,8 +175,8 @@ while running:
     clock.tick(30)  # Maintain 30 FPS
     # increase counter for img sequence
     i += 1
+    preloaded -= 1
 
 
 
-#cap.release()
 pygame.quit()
