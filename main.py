@@ -1,5 +1,4 @@
 import pygame
-import random
 import cv2
 import numpy as np
 from arrows import ArrowManager
@@ -40,17 +39,16 @@ pygame.display.set_caption("DDR Game")
 clock = pygame.time.Clock()
 
 # Initialize video player
-video_path = 'cgtfa-e001.mp4'
+video_path = 'cgtfa e001.mp4'
 cap = cv2.VideoCapture(video_path)
 frame_surfaces = []
-
+'''
 # Read video data and turn it into pygame surfaces
 read = True
-print('starting video loop')
 #while read:
+print('starting preload...')
 for i in range(2550):
     grabbed, frame = cap.read()
-    print('in loop')
     if grabbed:
         # Convert the frame to RGB
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -60,10 +58,8 @@ for i in range(2550):
         frame_surfaces.append(pygame.surfarray.make_surface(frame))
     else:
         break
-        #read = False
-print('out of loop')
-cap.release()
-
+print('preload done!')
+'''
 
 # Fonts for text
 font = pygame.font.SysFont('Alagard', 60)
@@ -99,13 +95,11 @@ print("About to start")
 # Run the start screen
 start_screen()
 
-
 # Arrow Manager
 arrow_manager = ArrowManager(screen)
 
 # make hitbox
-hitbox = pygame.image.load('assets/hitbox.png')
-x = True
+#hitbox = pygame.image.load('assets/hitbox.png')
 # Main game loop
 running = True
 preloaded = 2550
@@ -119,12 +113,11 @@ while running:
             pygame.quit()
             exit()
 
-    
+    '''
     # Read a frame from the video
     if preloaded <= 0:
         grabbed, frame = cap.read()
         frame_surface = None
-        print('grabbed')
         if grabbed:
             # Convert the frame to RGB
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -132,51 +125,45 @@ while running:
 
             # Create a Pygame Surface from the frame
             frame_surface = pygame.surfarray.make_surface(frame)
-    
+    '''
 
     # loop through notes to see if an arrow is ready to spawn
     for x in notes:
         # checking when and where to spawn an arrow
         if current_time >= x[3]:  # When it's time to play this note
             direction = x[1]
-            arrow_manager.spawn_arrow(direction, screen_width, 1080)
-            notes.remove(x)
+            if current_time >= 576:
+                arrow_manager.random_spawn(direction, screen_height)
+                notes.remove(x)
+            else:
+                arrow_manager.spawn_arrow(direction, screen_width, screen_height)
+                notes.remove(x)
 
-        
-    '''
-    # Generate arrows randomly
-    if random.randint(1, 20) == 1:  # Example condition to create an arrow
-        direction = random.choice(["left_down", "left", "left_up", "up", "down", "right_up", "right", "right_down", "left_down2", "left2", "left_up2", "up2", "down2", "right_up2", "right2", "right_down2"])
-        arrow_manager.spawn_arrow(direction, screen_width, screen_height)
-    '''
     # Update game state
     arrow_manager.update()
-
     
+ 
     # check for collision
     arrow_manager.check_collision(pygame, joystick1, joystick2, txtRndr)
     
 
     # Draw everything
     screen.fill((0, 0, 0))  # Clear screen
+    '''
     # Display the frame on the screen
-    print(preloaded)
-    print(i)
-    print("")
     if preloaded > 0 and frame_surfaces[i] != None:
         screen.blit(frame_surfaces[i], (0, 0)) 
     else:
         screen.blit(frame_surface, (0, 0))
-    #screen.blit(bg_img, (0, 0))
     txtRndr.render(screen)
-    screen.blit(hitbox, (0, 0)) # draw hitbox
+    '''
+    #screen.blit(hitbox, (0, 0)) # draw hitbox
     arrow_manager.draw()
     pygame.display.flip()
     clock.tick(30)  # Maintain 30 FPS
-    # increase counter for img sequence
-    i += 1
-    preloaded -= 1
+    i += 1 # increase counter for img sequence
+    preloaded -= 1 # decrease counter for how many frames are preloaded
 
 
-
+cap.release()
 pygame.quit()
