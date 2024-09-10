@@ -1,5 +1,6 @@
 import pygame
 import time
+import random
 from textRenderer import TextRenderer
 
 # Dictionary for direction to x coordinates
@@ -24,7 +25,7 @@ class Arrow(pygame.sprite.Sprite):
     
     def update(self):
         self.rect.y -= 12
-        if self.rect.y < 0:
+        if self.rect.y < 10:
             self.kill()  # Remove the arrow when it goes off-screen
 
 class ArrowManager:
@@ -40,6 +41,11 @@ class ArrowManager:
     def spawn_arrow(self, direction, x, y):
        # Determine position based on direction
         x = xdict[direction]
+        self.add(x, y, direction)
+    
+    def random_spawn(self, direction, y):
+        xd = random.choice(["left_down", "left", "left_up", "up", "down", "right_up", "right", "right_down", "left_down2", "left2", "left_up2", "up2", "down2", "right_up2", "right2", "right_down2"])
+        x = xdict[xd]
         self.add(x, y, direction)
 
     def update(self):
