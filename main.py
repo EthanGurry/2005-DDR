@@ -39,15 +39,16 @@ pygame.display.set_caption("DDR Game")
 clock = pygame.time.Clock()
 
 # Initialize video player
-video_path = 'cgtfa e001.mp4'
+video_path = '12 frames test 01.mp4'
 cap = cv2.VideoCapture(video_path)
 frame_surfaces = []
-'''
+
 # Read video data and turn it into pygame surfaces
 read = True
 #while read:
 print('starting preload...')
-for i in range(2550):
+preloaded = 3000
+for i in range(preloaded):
     grabbed, frame = cap.read()
     if grabbed:
         # Convert the frame to RGB
@@ -59,7 +60,7 @@ for i in range(2550):
     else:
         break
 print('preload done!')
-'''
+
 
 # Fonts for text
 font = pygame.font.SysFont('Alagard', 60)
@@ -99,10 +100,9 @@ start_screen()
 arrow_manager = ArrowManager(screen)
 
 # make hitbox
-#hitbox = pygame.image.load('assets/hitbox.png')
+hitbox = pygame.image.load('assets/hitbox.png')
 # Main game loop
 running = True
-preloaded = 2550
 start_time = time.time()
 i = 0
 while running:
@@ -113,7 +113,7 @@ while running:
             pygame.quit()
             exit()
 
-    '''
+    
     # Read a frame from the video
     if preloaded <= 0:
         grabbed, frame = cap.read()
@@ -125,7 +125,7 @@ while running:
 
             # Create a Pygame Surface from the frame
             frame_surface = pygame.surfarray.make_surface(frame)
-    '''
+    
 
     # loop through notes to see if an arrow is ready to spawn
     for x in notes:
@@ -149,18 +149,18 @@ while running:
 
     # Draw everything
     screen.fill((0, 0, 0))  # Clear screen
-    '''
+    
     # Display the frame on the screen
     if preloaded > 0 and frame_surfaces[i] != None:
         screen.blit(frame_surfaces[i], (0, 0)) 
     else:
         screen.blit(frame_surface, (0, 0))
+    
     txtRndr.render(screen)
-    '''
-    #screen.blit(hitbox, (0, 0)) # draw hitbox
+    screen.blit(hitbox, (0, 0)) # draw hitbox
     arrow_manager.draw()
     pygame.display.flip()
-    clock.tick(30)  # Maintain 30 FPS
+    clock.tick(10)  # Maintain 30 FPS
     i += 1 # increase counter for img sequence
     preloaded -= 1 # decrease counter for how many frames are preloaded
 
