@@ -24,8 +24,8 @@ class Arrow(pygame.sprite.Sprite):
         txtRndr.show_text("MISS!", (self.rect.x, 75), duration, color )
     
     def update(self):
-        self.rect.y -= 12
-        if self.rect.y < 10:
+        self.rect.y -= 30
+        if self.rect.y < 0:
             self.kill()  # Remove the arrow when it goes off-screen
 
 class ArrowManager:
@@ -73,6 +73,7 @@ class ArrowManager:
             elif arrow.rect.y < 100:
                 arrow.miss(txtRndr) # generates miss text
                 self.arrows.remove(arrow)
+           
            
                 
 
